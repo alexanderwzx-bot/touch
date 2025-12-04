@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Stop at Reset</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    .scene {
+      position: relative;
+      width: 600px;
+      height: 200px;
+      border: 2px solid #333;
+      background-color: #fff;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .car {
+      position: absolute;
+      width: 80px;
+      height: 40px;
+      background-color: blue;
+      border-radius: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 0;
+      transition: left 0.05s linear;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="car" id="car"></div>
+  </div>
+
+  <button id="engineBtn">Press and Hold Engine</button>
+
+  <audio id="engineSound" src="https://www.soundjay.com/transportation/car-engine-start-1.mp3"></audio>
+
+  <script>
+    const car = document.getElementById('car');
+    const button = document.getElementById('engineBtn');
+    const engineSound = document.getElementById('engineSound');
+
+    let carInterval;
+
+    function startCarMovement() {
+      clearInterval(carInterval);
+      carInterval = setInterval(() => {
+        let left = parseFloat(car.style.left) || 0;
+        left += 2; // 移动速度
+        if (left >= 520) { // 到达右边界（600 - 车宽80）
+          clearInterval(carInterval); // 停止移动
+          car.style.left = '0px'; // 回到初始位置
+        } else {
+          car.style.left = left + 'px';
+        }
+      }, 20);
+    }
+
+    // 按住按钮 → 播放引擎启动声
+    button.addEventListener('mousedown', () => {
+      engineSound.currentTime = 0;
+      engineSound.play();
+    });
+
+    // 松开按钮 → 小车开始移动
+    button.addEventListener('mouseup', () => {
+      engineSound.pause();
+      engineSound.currentTime = 0;
+      startCarMovement();
+    });
+
+    // 支持触屏
+    button.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      engineSound.currentTime = 0;
+      engineSound.play();
+    });
+
+    button.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      engineSound.pause();
+      engineSound.currentTime = 0;
+      startCarMovement();
+    });
+  </script>
+</body>
+</html>
